@@ -62,10 +62,9 @@ def unlock_retry_request(start_when_seconds_left: int, cookie: str) -> None:
 
     print()
     print("Starting sending requests...")
-    while 0 <= seconds_left_until_utc_8_midnight() < start_when_seconds_left:
+    while 0 <= seconds_left_until_utc_8_midnight():
         r = send_unlock_request(cookie)
         print(json.dumps(r, indent=2))
-        time.sleep(0.1)
 
 
 if __name__ == "__main__":
