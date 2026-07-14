@@ -63,7 +63,7 @@ def unlock_retry_request(start_when_seconds_left: int, cookie: str) -> None:
     print()
     print("Starting sending requests...")
     while 0 <= seconds_left_until_utc_8_midnight() < start_when_seconds_left:
-        r = send_unlock_request(cookie)
+        r = send_unlock_request(cookie)  # TODO: Later use async
         print(json.dumps(r, indent=2))
         time.sleep(0.1)
 
