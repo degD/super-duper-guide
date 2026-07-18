@@ -5,6 +5,7 @@ import requests
 import json
 import datetime
 import dotenv
+import threading
 
 def send_unlock_request(cookie: str) -> dict | None:
     url = "https://sgp-api.buy.mi.com/bbs/api/global/apply/bl-auth"
@@ -44,6 +45,16 @@ def seconds_left_until_utc_8_midnight():
     seconds_left = int((utc_plus_8_next_midnight - utc_plus_8_now).total_seconds())
     return seconds_left
 
+def start_request_thread(cookie: str):
+    def target():
+        print("Thread started!")
+        r = send_unlock_request(cookie)
+        print(json.dumps(r, indent=2))
+    t = threading.Thread(
+        target=target,
+    )
+    t.start()
+
 def unlock_retry_request(start_when_seconds_left: int, cookie: str) -> None:
     print("Making sure token is fresh...")
     r = send_unlock_request(cookie)
@@ -63,9 +74,8 @@ def unlock_retry_request(start_when_seconds_left: int, cookie: str) -> None:
     print()
     print("Starting sending requests...")
     while 0 <= seconds_left_until_utc_8_midnight():
-        r = send_unlock_request(cookie)
-        print(json.dumps(r, indent=2))
-
+        start_request_thread(cookie)
+        time.sleep(0.1)
 
 if __name__ == "__main__":
 
