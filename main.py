@@ -1,13 +1,15 @@
 
 import os
+import shutil
 import time
 import requests
 import json
 import datetime
 import dotenv
 import threading
+from pathlib import Path
 
-def send_unlock_request(cookie: str) -> dict | None:
+def send_unlock_request(cookie: str, is_save: bool = True) -> dict | None:
     url = "https://sgp-api.buy.mi.com/bbs/api/global/apply/bl-auth"
 
     headers = {
@@ -26,7 +28,15 @@ def send_unlock_request(cookie: str) -> dict | None:
     if response.status_code != 200:
         print(f"Request failed: {response}")
     else:
+        if is_save:
+            if not Path("./logs/").exists():
+                os.mkdir("logs")
+            with open(f"./logs/{time.monotonic_ns()}.log", "w") as fp:
+                fp.write(json.dumps(response.json(), indent=2))
         return response.json()
+
+def reset_logs():
+    shutil.rmtree("./logs/", ignore_errors=True)
 
 def check_response(response_json: dict) -> bool:
     if response_json["code"] != 0:
@@ -86,4 +96,5 @@ if __name__ == "__main__":
         print("Please set COOKIE in .env file")
         exit(1)
     else:
+        reset_logs()
         unlock_retry_request(10, cookie)
