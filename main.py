@@ -68,7 +68,8 @@ def unlock_retry_request(start_when_seconds_left: int, cookie: str) -> None:
 
     print(f"Waiting until {start_when_seconds_left} seconds left to UTC+8 midnight.")
     while seconds_left_until_utc_8_midnight() > start_when_seconds_left:
-        print(f"  Currently {seconds_left_until_utc_8_midnight()} seconds left...\r", end="")
+        timestr = datetime.timedelta(seconds=seconds_left_until_utc_8_midnight())
+        print(f"  Currently {timestr} left...\r", end="")
         time.sleep(0.1)
 
     print()
